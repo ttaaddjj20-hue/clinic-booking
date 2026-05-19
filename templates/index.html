@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>حجز موعد العيادة</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: linear-gradient(135deg, #e9f0ff, #f7f9ff);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .card {
+           
+            background: white;
+            padding: 25px;
+            border-radius: 18px;
+            width: 340px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 10px;
+            color: #2d6cdf;
+        }
+
+        .info {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        input, select {
+            width: 90%;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            outline: none;
+            font-size: 14px;
+        }
+
+        select {
+            background: white;
+        }
+
+        button {
+            width: 95%;
+            padding: 11px;
+            background: #2d6cdf;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background: #1b4fb3;
+        }
+
+        .closed {
+            color: red;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .count {
+            margin-bottom: 10px;
+            font-size: 13px;
+            color: #444;
+        }
+    </style>
+</head>
+
+<body>
+ {% with messages = get_flashed_messages() %}
+              {% if messages %}
+                <div style="
+                    background:#d4edda;
+                    color:#155724;
+                    padding:10px;
+                    border-radius:8px;
+                    margin-bottom:10px;
+                    font-size:14px;
+                ">
+                    {% for msg in messages %}
+                        {{ msg }}
+                    {% endfor %}
+                </div>
+              {% endif %}
+            {% endwith %}
+<script>
+setTimeout(() => {
+    let msg = document.querySelector("body > div");
+    if (msg && msg.innerText.includes("تم إرسال")) {
+        msg.style.display = "none";
+    }
+}, 4000);
+</script>
+<div class="card">
+
+    <h2>نظام حجز العيادة</h2>
+    <div style="
+    text-align:center;
+    margin-bottom:15px;
+    padding:10px;
+    background:#f2f6ff;
+    border-radius:10px;
+    color:#2d6cdf;
+    font-size:14px;
+    line-height:1.6;
+">
+    <b>عيادة لحرش للأشعة ترحب بكم</b><br>
+    Clinique El Harrach d’Imagerie Médicale vous souhaite la bienvenue
+</div>
+
+    <div class="info">
+        يرجى ملء المعلومات بدقة وسيتم الاتصال بك لاحقًا
+    </div>
+
+    
+
+    {% if open %}
+
+        <form method="POST" action="/book">
+
+            <input type="text" name="fullname" placeholder="الاسم الكامل" required>
+
+            <input type="text" name="phone" placeholder="رقم الهاتف" required>
+
+            <select name="exam" id="exam" onchange="loadSubtypes()" required>
+                <option value="">-- اختر نوع الفحص --</option>
+                <option value="Échographie">إيكوغرافي</option>
+                <option value="Panoramique">بانورامي</option>
+                <option value="Mammographie">ماموغرافي</option>
+                <option value="Radiographie">راديو ستاندار</option>
+                <option value="Scanner">سكانير</option>
+            </select>
+            
+
+            <button type="submit">إرسال طلب الحجز</button>
+
+        </form>
+
+    {% else %}
+
+        <div class="closed">
+            ❌ الحجز مغلق حالياً (06:00 - 08:00)
+        </div>
+
+    {% endif %}
+
+</div>
+
+</body>
+</html>

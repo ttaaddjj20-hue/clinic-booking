@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>لوحة إدارة العيادة</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #eef3fb;
+            padding: 20px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #2d6cdf;
+            margin-bottom: 10px;
+        }
+
+        .box {
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 15px;
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        th {
+            background: #2d6cdf;
+            color: white;
+            padding: 12px;
+            font-size: 14px;
+        }
+
+        td {
+            padding: 10px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+
+        tr:hover {
+            background: #f5f8ff;
+        }
+
+        /* ألوان حسب نوع الفحص */
+        .echo { background: #e8f5ff; }
+        .scan { background: #ffe8e8; }
+        .radio { background: #f3ffe8; }
+        .mammo { background: #fff3e8; }
+        .pan { background: #f0e8ff; }
+    </style>
+</head>
+<script>
+setInterval(() => {
+    fetch(window.location.href)
+        .then(response => response.text())
+        .then(html => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, "text/html");
+
+            const newTable = doc.querySelector("table");
+            const oldTable = document.querySelector("table");
+
+            if (newTable && oldTable) {
+                oldTable.innerHTML = newTable.innerHTML;
+            }
+        });
+}, 5000); // كل 5 ثواني
+</script>
+<body>
+    <div style="text-align:right; margin-bottom:10px;">
+    <a href="/logout" style="
+        padding:8px 15px;
+        background:red;
+        color:white;
+        text-decoration:none;
+        border-radius:6px;
+        font-size:14px;
+    ">
+        🚪 تسجيل الخروج
+    </a>
+</div>
+<h3 style="text-align:center; color:#2d6cdf;">📊 إحصائيات الفحوصات</h3>
+
+<div style="display:flex; justify-content:center; flex-wrap:wrap; gap:10px;">
+
+    {% for s in stats %}
+        <div style="
+            background:white;
+            padding:10px 20px;
+            border-radius:10px;
+            box-shadow:0 3px 10px rgba(0,0,0,0.1);
+            min-width:120px;
+            text-align:center;
+        ">
+            <div>{{ s[0] }}</div>
+            <b style="color:#2d6cdf;">{{ s[1] }}</b>
+        </div>
+    {% endfor %}
+
+</div>
+<a href="/search" style="
+    display:inline-block;
+    padding:8px 12px;
+    background:#2d6cdf;
+    color:white;
+    border-radius:6px;
+    text-decoration:none;
+    margin-bottom:10px;
+">
+🔎 بحث المرضى
+</a>
+<h2>لوحة إدارة المواعيد</h2>
+
+<div class="box">
+    إجمالي الطلبات اليوم: <b>{{ bookings|length }}</b>
+</div>
+<h3 style="text-align:center;">📊 حصص الفحوصات اليوم</h3>
+
+<div style="display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-bottom:15px;">
+
+    {% for exam, limit in {
+        'Échographie': 10,
+        'Scanner': 5,
+        'Mammographie': 1,
+        'Radiographie': None,
+        'Panoramique': None
+    }.items() %}
+
+        {% set used = usage.get(exam, 0) %}
+
+        {% if limit %}
+            {% set percent = (used / limit) * 100 %}
+
+            <div style="
+                padding:10px 15px;
+                border-radius:10px;
+                color:white;
+                font-size:14px;
+                min-width:160px;
+                text-align:center;
+                background:
+                    {% if used >= limit %}#e74c3c
+                    {% elif percent > 70 %}#f39c12
+                    {% else %}#2ecc71
+                    {% endif %};
+            ">
+                {{ exam }} : {{ used }}/{{ limit }}
+            </div>
+
+        {% else %}
+
+            <div style="
+                padding:10px 15px;
+                border-radius:10px;
+                background:#3498db;
+                color:white;
+                min-width:160px;
+                text-align:center;
+            ">
+                {{ exam }} : {{ used }} / ∞
+            </div>
+
+        {% endif %}
+
+    {% endfor %}
+
+</div>
+<<table>
+
+    <tr>
+        <th onclick="sortTable(0)">ID ↕</th>
+        <th onclick="sortTable(1)">الاسم ↕</th>
+        <th>الهاتف</th>
+        <th onclick="sortTable(3)">الفحص ↕</th>
+        <th onclick="sortTable(4)">وقت الحجز ↕</th>
+        <th>السعر</th>
+        <th>المدفوع</th>
+        <th>الباقي</th>
+        <th>الإجراءات</th>
+        <th>الحالة</th>
+    </tr>
+
+    {% for b in bookings %}
+
+        {% set exam = b[3] %}
+
+        <tr
+        class="
+            {% if 'Échographie' in exam %}echo{% endif %}
+            {% if 'Scanner' in exam %}scan{% endif %}
+            {% if 'Radiographie' in exam %}radio{% endif %}
+            {% if 'Mammographie' in exam %}mammo{% endif %}
+            {% if 'Panoramique' in exam %}pan{% endif %}
+        ">
+
+            <td>{{ b[0] }}</td>
+            <td>{{ b[1] }}</td>
+            <td>{{ b[2] }}</td>
+            <td>{{ b[3] }}</td>
+            <td>{{ b[4] }}</td>
+
+            <!-- السعر -->
+            <td>
+                <input type="number"
+                       value="{{ b[5] or 0 }}"
+                       oninput="calc(this, {{ b[0] }})"
+                       id="price-{{ b[0] }}">
+            </td>
+
+            <!-- المدفوع -->
+            <td>
+                <input type="number"
+                       value="{{ b[6] or 0 }}"
+                       oninput="calc(this, {{ b[0] }})"
+                       id="paid-{{ b[0] }}">
+            </td>
+
+            <!-- الباقي -->
+            <td id="remain-{{ b[0] }}">
+                {{ b[7] }}
+            </td>
+
+            <!-- الإجراءات -->
+            <td>
+                <a href="/delete/{{ b[0] }}" onclick="return confirm('هل أنت متأكد من الحذف؟')">
+                    🗑️ حذف
+                </a>
+                |
+                <a href="/edit/{{ b[0] }}">
+                    ✏️ تعديل
+                </a>
+                <a href="/set-exam/{{ b[0] }}">
+                    🧪 تحديد النوع
+                </a>
+                |
+                <a href="/status/{{ b[0] }}/done">✔ تم</a>
+                |
+                <a href="/status/{{ b[0] }}/cancel">❌ إلغاء</a>
+                <a href="/print/{{ b[0] }}" target="_blank">🧾 معاينة</a>
+                <a href="/print-direct/{{ b[0] }}">🖨️ طباعة مباشرة</a>
+            </td>
+
+            <!-- الحالة -->
+            <td>
+                {% if b[8] == 'pending' %}
+                    ⏳ في الانتظار
+                {% elif b[8] == 'done' %}
+                    ✔ تم الفحص
+                {% else %}
+                    ❌ ملغي
+                {% endif %}
+            </td>
+
+        </tr>
+
+    {% endfor %}
+
+</table>
+
+<audio id="notif" src="https://www.soundjay.com/buttons/sounds/button-3.mp3"></audio>
+
+<script>
+setInterval(() => {
+    fetch(window.location.href)
+    .then(r => r.text())
+    .then(() => {
+        document.getElementById("notif").play();
+    });
+}, 10000);
+</script>
+
+<button onclick="window.print()">🧾 طباعة</button>
+...
+
+<!-- 🔽 هنا تضع كود الفرز -->
+<script>
+let sortDirection = {
+    0: true,
+    1: true
+};
+
+function sortTable(columnIndex) {
+    const table = document.querySelector("table");
+    const rows = Array.from(table.rows).slice(1);
+
+    let asc = sortDirection[columnIndex];
+    sortDirection[columnIndex] = !asc;
+
+    rows.sort((a, b) => {
+        let A = a.cells[columnIndex].innerText.trim();
+        let B = b.cells[columnIndex].innerText.trim();
+
+        if (columnIndex === 0) {
+            return asc ? A - B : B - A;
+        }
+
+        return asc
+            ? A.localeCompare(B)
+            : B.localeCompare(A);
+    });
+
+    rows.forEach(row => table.appendChild(row));
+}
+</script>
+<script>
+function calc(el, id) {
+    let price = parseFloat(document.getElementById("price-" + id).value) || 0;
+    let paid = parseFloat(document.getElementById("paid-" + id).value) || 0;
+    let remaining = price - paid;
+
+    document.getElementById("remain-" + id).innerText = remaining;
+
+    // إرسال التحديث للسيرفر
+    fetch("/update-payment/" + id, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: "price=" + price + "&paid=" + paid
+    });
+}
+</script>
+</body>
+
+</html>

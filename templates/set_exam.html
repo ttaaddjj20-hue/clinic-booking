@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>تحديد نوع الفحص</title>
+
+    <style>
+        body{
+            font-family:Arial;
+            background:#eef3fb;
+            padding:30px;
+        }
+
+        .box{
+            background:white;
+            max-width:400px;
+            margin:auto;
+            padding:25px;
+            border-radius:15px;
+            box-shadow:0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        h2{
+            text-align:center;
+            color:#2d6cdf;
+        }
+
+        select,input,button{
+            width:100%;
+            padding:10px;
+            margin-top:10px;
+            border-radius:8px;
+            border:1px solid #ccc;
+        }
+
+        button{
+            background:#2d6cdf;
+            color:white;
+            border:none;
+            cursor:pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="box">
+
+<h2>تحديد نوع الفحص</h2>
+
+<form method="POST">
+
+    <label>نوع الفحص التفصيلي</label>
+
+    <select name="subtype" id="subtype" onchange="setPrice()" required>
+
+        {% for e in exams %}
+
+            <option 
+                value="{{ e[0] }}" 
+                data-price="{{ e[1] }}"
+            >
+                {{ e[0] }}
+            </option>
+
+        {% endfor %}
+
+    </select>
+
+    <label>السعر</label>
+
+    <input 
+        name="price"
+        id="price"
+        type="number"
+        readonly
+    >
+
+    <button>حفظ</button>
+
+</form>
+
+</div>
+
+<script>
+
+function setPrice() {
+
+    let select = document.getElementById("subtype");
+
+    let price =
+        select.options[select.selectedIndex]
+        .getAttribute("data-price");
+
+    document.getElementById("price").value = price;
+}
+
+setPrice();
+
+</script>
+
+</body>
+</html>

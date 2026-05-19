@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>بحث المرضى</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #f5f7fb;
+            padding: 20px;
+        }
+
+        .box {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        input {
+            padding: 10px;
+            width: 300px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        th {
+            background: #2d6cdf;
+            color: white;
+            padding: 10px;
+        }
+
+        td {
+            padding: 10px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+
+        tr:hover {
+            background: #f0f5ff;
+        }
+    </style>
+</head>
+
+<body>
+
+<h2 style="text-align:center;">🔎 بحث المرضى</h2>
+
+<div class="box">
+    <form method="GET">
+        <input type="text" name="q" placeholder="اكتب اسم أو رقم الهاتف" value="{{ query }}">
+        <button type="submit">بحث</button>
+    </form>
+</div>
+
+<table>
+    <tr>
+        <th>ID</th>
+        <th>الاسم</th>
+        <th>الهاتف</th>
+        <th>الفحص</th>
+        <th>التاريخ</th>
+    </tr>
+
+    {% for r in results %}
+    <tr>
+        <td>{{ r[0] }}</td>
+        
+        <td>
+            <a href="/patient/{{ r[0] }}">
+                {{ r[1] }}
+            </a>
+        </td>
+        <td>{{ r[2] }}</td>
+        <td>{{ r[3] }}</td>
+        <td>{{ r[4] }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+</body>
+</html>

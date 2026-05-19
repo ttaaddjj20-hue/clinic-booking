@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>إحصائيات العيادة</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #f4f7ff;
+            text-align: center;
+            padding: 30px;
+        }
+
+        h2 {
+            color: #2d6cdf;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            margin: 15px auto;
+            width: 300px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            font-size: 18px;
+        }
+
+        .count {
+            font-size: 25px;
+            color: #2d6cdf;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+<h2>📊 إحصائيات العيادة</h2>
+
+{% for item in data %}
+<div class="card">
+    <div>{{ item[0] }}</div>
+    <div class="count">{{ item[1] }}</div>
+</div>
+{% endfor %}
+
+</body>
+</html>

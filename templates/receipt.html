@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>وصل طبي</title>
+
+<style>
+body {
+    font-family: Arial;
+    text-align: center;
+    padding: 20px;
+}
+.box {
+    border: 1px solid #333;
+    padding: 15px;
+    width: 350px;
+    margin: auto;
+}
+h2 { color: #2d6cdf; }
+.qr { margin-top: 10px; }
+</style>
+</head>
+
+<body onload="window.print()">
+
+<div class="box">
+
+<h2>عيادة لحرش للأشعة</h2>
+<p>Clinique El Harrach Radiologie</p>
+
+<hr>
+
+<p><b>الاسم:</b> {{ b[1] }}</p>
+<p><b>الهاتف:</b> {{ b[2] }}</p>
+<p><b>الفحص:</b> {{ b[3] }}</p>
+<p><b>السعر:</b> {{ b[5] }}</p>
+<p><b>المدفوع:</b> {{ b[6] }}</p>
+<p><b>الباقي:</b> {{ b[7] }}</p>
+
+<hr>
+
+<img class="qr" src="data:image/png;base64,{{ qr }}" width="180">
+
+<p style="margin-top:10px;">
+شكراً لزيارتكم ❤️
+<br>
+Merci pour votre visite
+</p>
+
+</div>
+
+</body>
+</html>

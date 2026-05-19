@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>تعديل المريض</title>
+</head>
+
+<body style="font-family:Arial; text-align:center; margin-top:50px;">
+
+<h2>✏️ تعديل بيانات المريض</h2>
+
+<form method="POST">
+
+    <input type="text" name="fullname" value="{{ b[1] }}" placeholder="الاسم"><br><br>
+
+    <input type="text" name="phone" value="{{ b[2] }}" placeholder="الهاتف"><br><br>
+
+    <input type="text" name="exam" value="{{ b[3] }}" placeholder="الفحص"><br><br>
+
+    <button type="submit">حفظ التعديل</button>
+
+</form>
+
+</body>
+</html>
